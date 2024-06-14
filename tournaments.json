@@ -1,0 +1,36 @@
+{
+  "Princeton TFA": {
+    "name": "Princeton TFA",
+    "date": "2023-09-09",
+    "team_code": "Hebron Chatha and Kotha",
+    "event": "VPF"
+  },
+
+  "Newman Smith Spontaneity 44": {
+    "name": "Newman Smith Spontaneity 44",
+    "date": "2023-09-29",
+    "team_code": "Hebron CK",
+    "event": "VPF"
+  },
+
+  "The Longhorn Classic": {
+    "name": "The Longhorn Classic",
+    "date": "2023-12-01",
+    "team_code": "Hebron CK",
+    "event": "VPF"
+  },
+
+  "The Wildcat Winter Whirlwind Plano Swing": {
+    "name": "The Wildcat Winter Whirlwind Plano Swing",
+    "date": "2024-01-19",
+    "team_code": "Hebron CK",
+    "event": "VPF"
+  },
+
+  "North Texas Longhorns District Tournament": {
+    "name": "North Texas Longhorns District Tournament",
+    "date": "2024-05-27",
+    "team_code": "Hebron CK",
+    "event": "VPF"
+  }
+}
