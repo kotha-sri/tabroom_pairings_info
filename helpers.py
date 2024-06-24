@@ -1,4 +1,7 @@
+import datetime
+import os
 from datetime import date
+import re
 from scrapers import *
 
 
@@ -15,6 +18,7 @@ def get_judge_full_name(judge_dict):
     if judge_dict['Last'] != '' and judge_dict['Last'] is not None:
         full_name += judge_dict['Last'] + ' '
     return full_name.strip()
+
 
 def load_entries(tourn_name, event_name):
     tourn_id = get_tourn_id(tourn_name)
@@ -33,6 +37,7 @@ def load_entries(tourn_name, event_name):
 
     with open('tournament_entries.json', 'w') as entries_json:
         entries_json.write(entries_dump)
+
 
 def load_paradigms(tourn_name, category_name):
     tourn_id = get_tourn_id(tourn_name)
@@ -55,6 +60,58 @@ def load_paradigms(tourn_name, category_name):
     with open('tournament_judges.json', 'w') as paras:
         paras.write(paradigm_dump)
 
+
+def convert_date(date, abrv_month=False, time_period=False):
+    # TODO: adapt to all possible formats
+    # three versions possible
+    # June 22 2024
+    # 6/22
+    # 6/22 - 6/23
+    if not abrv_month:
+        if time_period:
+            pass
+
+
+    MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    string = date.split()
+
+    year = string[2]
+    day = string[1]
+
+    if len(day) < 2:
+        day = "0" + day
+
+    month = str(MONTHS.index(string[0]) + 1)
+
+    if len(month) < 2:
+        month = "0" + month
+
+    return "{0}-{1}-{2}".format(year, month, day)
+
+
+def load_tournaments(username, password):
+    endpoint = 'https://www.tabroom.com/user/login/login_save.mhtml'
+    payload = {'username': username, 'password': password}
+    html = requests.post(url=endpoint, data=payload)
+    soup = BeautifulSoup(html.text, 'html.parser')
+    future_tournies = soup.find('div', {'class': 'screens future'})
+
+    # until a tournament 'future' page can be found, assume it will look this after be dicted
+    # {'Tournament': 'Hebron Standard TFA Tournament', 'Dates': ('Nov 4 2022', 'Nov 5 2022'), 'Info': None, 'Status': 'Confirmed'}
+
+    future_tournies['Dates'] = convert_date(future_tournies['Dates'])
+
+    with open('tournaments.json', 'w+') as tournies:
+        tournies_dict = json.loads(tournies.read())
+        for future_tourn in future_tournies:
+            if future_tourn['Status'] == 'Confirmed' and future_tourn['Tournament'] not in tournies_dict.keys():
+                tournies_dict[future_tourn['Tournament']] = future_tourn
+        tournies.write(tournies_dict)
+
+
+load_tournaments(os.environ['TABROOM_USERNAME'], os.environ['TABROOM_PASSWORD'])
+
+
 def is_loaded(json_file, tourn_name):
     with open(json_file, 'r') as file:
         json_dict = json.loads(file.read())
@@ -62,6 +119,7 @@ def is_loaded(json_file, tourn_name):
             return True
         else:
             return False
+
 
 def get_current_tournament():
     with open('tournaments.json', 'r') as file:
@@ -71,13 +129,14 @@ def get_current_tournament():
                 return tourn_dict
     return None
 
+
 def record_as_table(record):
     header = "|"
     for key in record.keys():
-        header += " " + key + " "*(16-len(key)) + "|" + " "
+        header += " " + key + " " * (16 - len(key)) + "|" + " "
     content = "|"
     for value in record.values():
-        content += " " + value + " "*(16-len(value)) + "|" + " "
+        content += " " + value + " " * (16 - len(value)) + "|" + " "
     print(header)
     print(content)
 
@@ -97,10 +156,12 @@ def format_pairing(room, flight, opponent, opponent_record, judge, judge_paradig
             print(p)
     print()
 
+
 def reset_json_files():
     with open('tournament_entries.json', 'w') as entries, open('tournament_judges.json', 'w') as judges:
         entries.write('{}')
         judges.write('{}')
+
 
 def get_pairings_page():
     pass
