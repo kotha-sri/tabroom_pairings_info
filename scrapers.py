@@ -14,11 +14,12 @@ def link_split(link, split):
 
 def sQUARE(x=5):
     return x * x
-
-print(sQUARE(2))
-
+    
 # converts a html table (from a link) to a python dictionary
 # different parameters are for the different types of tables on the Tabroom.com site
+
+# TODO: find out how tabroom pairings look like in the future tab (where upcoming tournaments are shown)
+#       and modify the function to work for that table
 def html_table_to_dict_list(page, stop=None, pairings=False, hrefed=False, headless_webdriver=False, html=False):
     table_list = []
 
@@ -85,7 +86,7 @@ def html_table_to_dict_list(page, stop=None, pairings=False, hrefed=False, headl
                         append_dict[dict_order[key_counter]] = "https://www.tabroom.com/" + href
                     key_counter += 1
                     continue
-
+                    
             append_dict[dict_order[key_counter]] = clean_html(td.get_text())
             key_counter += 1
 
